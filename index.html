@@ -286,7 +286,7 @@ const SPOTS=[
  ["일","이와타야 · 파르코 · MoMA · 몽벨","이와타야 6층 베이비·키즈"],
  ["월","라라포트 · 아카창혼포","3층 · 10:00~21:00"]
 ];
-const BABY=[["스와비넥스","탕온도계"],["밤부베베","손수건 · 천기저귀"],["마더케이","신생아 점착 면봉 · 위생 면봉 · 건티슈 160매 · 세척용품 세트"],["벨몽","리버시블 코튼 에어 방수요 (2개)"],["스와비넥스","올실리콘 2단계 쪽쪽이 · 쪽쪽이 클립"],["헤겐","신생아 PPSU 젖병"],["쪼비","휴대용 쪽쪽이 살균기"],["바이오가이아","프로텍티스 이지드롭"]];
+const BABY=[["스와비넥스 쪽쪽이 2~3개","신세계면세점 · 모유 촉감 올실리콘 2단계 · 필수"],["스와비넥스 쪽쪽이 클립 1~2개","신세계면세점 · 필수"],["벨몽 방수요 2개","신세계면세점 · 리버시블 코튼 에어 · 번갈아 사용"],["쪼비 쪽쪽이 살균기 1개","신세계면세점 · 필수"],["풀리오 다리 마사지기 1개","신세계면세점 · 산후 조리용 · 할인폭 큼"],["바이오가이아 이지드롭 1~2개","롯데면세점/국내 · 입점 확인 후"],["젖병 세척 용품","면세점 통합검색 · 세제 1~2 / 브러시 1~2세트"],["치발기 2개","면세점 통합검색 · 다른 디자인으로"],["밤부베베 손수건 30~40장","국내 쇼핑몰 · 면세 입점 드묾"],["밤부베베 천기저귀 5~10장","국내 쇼핑몰 · 다용도"],["마더케이 건티슈·면봉·세척세트","국내 쇼핑몰 · 부피·무게 때문에"]];
 const TODO=[
  {id:"t1",x:"스시 야마나카 예약",n:"9/26 토 19:00 · 4인 · 저녁 니기리",tel:"0924096688"},
  {id:"t2",x:"모츠나베 마에다야 예약",n:"9/27 일 18:00 · 3인 · 온라인",tel:"0924828558"},
@@ -357,6 +357,18 @@ const BUY = [
   items:[["버사라이트 20L 백팩 (화이트)","9,700엔",""],["포커블 베이비 캐리어 워머","","아기 방한 커버 · 한국 8,400원"],["포커블 아기띠","","굳이 싶음"],["동전지갑","1,300엔",""]]},
  {id:"etc", shop:"그 외", note:"",
   items:[["스탠다드 프로덕트","","보냉백·장바구니·그릇 · 면세 안 됨 → 굳이 안 가도 됨"],["유니클로","","바디수트 — 한국보다 싸고 디자인 귀여움 · 텐진점 프린트 가능"],["무인양품","","선미스트"]]}
+];
+const LIVING = [
+ {g:"하카타 리버레인몰 (나카스카와바타역 직결)", rows:[
+   ["토키네리","1층 · 10:00~19:00","일본제 식기·생활잡화 · 카페 À côté de T 병설"],
+   ["부도노타네 하카타","1층 · 10:00~19:00","잡화·그릇"],
+   ["maruni fukuoka by weeks","1층 · 확인 필요","마루니 목공 가구 · 규슈 최대"],
+   ["하사미야키 숍 미뇽 HAKATA","지하 2층 · 10:00~19:00","하사미야키·아리타야키 그릇"]]},
+ {g:"텐진", rows:[
+   ["salut!","텐진 지하상가 320호 · 10:00~20:00","프랑스풍 소품, 저가"],
+   ["내추럴 키친 &","텐진 지하상가 1번가 · 10:00~20:00","100엔대 주방·생활잡화"],
+   ["EAST table","ONE FUKUOKA BLDG. · 확인 필요","MoMA와 같은 건물"],
+   ["스가하라 숍 후쿠오카","확인 필요","유리 공예"]]}
 ];
 const KL={food:"먹기",move:"이동",see:"보기",shop:"쇼핑",rest:"휴식"};
 
@@ -493,6 +505,7 @@ const S={
      <div class="row" data-go="#/shop/buy"><span style="font-size:22px">🛒</span><span class="mid"><div class="ttl">일본에서 살 것</div><div class="sub">아카쨩혼포 · 돈키호테 · 몽벨 · 유니클로</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/souv"><span style="font-size:22px">🎁</span><span class="mid"><div class="ttl">기념품</div><div class="sub">토 18:20 하카타역 마잉 · 유통기한</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/spots"><span style="font-size:22px">📍</span><span class="mid"><div class="ttl">날짜별 쇼핑 스팟</div><div class="sub">토 하카타역 · 일 텐진 · 월 라라포트</div></span><span class="chev">›</span></div>
+     <div class="row" data-go="#/shop/living"><span style="font-size:22px">🪴</span><span class="mid"><div class="ttl">리빙 · 소품</div><div class="sub">리버레인몰 4곳 · 텐진 4곳</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/baby"><span style="font-size:22px">🍼</span><span class="mid"><div class="ttl">아기용품</div><div class="sub">면세점 구매 예정 · 8개</div></span><span class="chev">›</span></div>
    </div>`};
  },
@@ -509,6 +522,10 @@ const S={
    <p class="note">공항은 예비. 국제선 매장은 품목이 적을 수 있어요.</p>`}},
  spots(){return {title:"날짜별 쇼핑 스팟", html:`
    <div class="list">${SPOTS.map(s=>`<div class="row static"><span class="tm">${s[0]}</span><span class="bar" style="background:var(--violet)"></span><span class="mid"><div class="ttl">${esc(s[1])}</div><div class="sub">${esc(s[2])}</div></span></div>`).join("")}</div>`}},
+ living(){return {title:"리빙 · 소품", html:`
+   ${LIVING.map(g=>`<h2 class="sec">${esc(g.g)}</h2>
+     <div class="list">${g.rows.map(r=>`<div class="row static"><span class="mid" style="white-space:normal"><div class="ttl" style="white-space:normal">${esc(r[0])}</div><div class="sub" style="white-space:normal">${esc(r[1])}</div><div class="sub" style="white-space:normal">${esc(r[2])}</div></span></div>`).join("")}</div>`).join("")}
+   <p class="note">리버레인몰 네 곳은 3일차 14:30 디저트와 같은 건물</p>`}},
  baby(){return {title:"아기용품", html:`
    <div class="card small">면세점 구매 예정</div>
    <h2 class="sec">목록</h2>${checklist("baby",BABY.map((b,i)=>({id:"b"+i,x:b[0],n:b[1]})))}`}},
@@ -613,7 +630,7 @@ const S={
 };
 
 /* ========== router ========== */
-const TAB_OF={home:"home",days:"days",i:"days",eat:"eat",shop:"shop",souv:"shop",spots:"shop",baby:"shop",buy:"shop",more:"more",map:"more",bag:"more",todo:"more",rain:"more",info:"more",walk:"more",near:"more",route:"more"};
+const TAB_OF={home:"home",days:"days",i:"days",eat:"eat",shop:"shop",souv:"shop",spots:"shop",baby:"shop",living:"shop",buy:"shop",more:"more",map:"more",bag:"more",todo:"more",rain:"more",info:"more",walk:"more",near:"more",route:"more"};
 function parse(){
  const p=(location.hash||"#/home").slice(2).split("/");
  let [a,b,c]=p;
