@@ -343,6 +343,21 @@ const NEAR = {
        ["FUK COFFEE","도보 10분","확인 필요","푸딩+커피 1,000~1,500엔"]]
 };
 const NEAR_PICK = [["자기 전 야식","호텔 옆 로손 (24시간)"],["스무디 (재미용)","세븐일레븐 지쿠시구치"],["과일·도시락 싸게","로피아 10:00~20:00"],["밤 10시 장보기","사니 스미요시점 (24시간)"],["커피 제대로","REC COFFEE 마루이 6층"],["비 오는 날 앉아 있기","츠루바미 코히칸 · REC COFFEE"]];
+/* ---- 일본에서 살 것 (구글 시트 '일본구매') ---- */
+const BUY = [
+ {id:"akachan", shop:"아카쨩혼포 (라라포트 3층)", note:"5,500엔 이상 사면 택스프리 · 10:00~21:00",
+  items:[["딸랑이","900~1,100엔","소리 예쁨 · 공항이 더 쌀 때도"],["아기 칫솔","600~700엔","물고 있다 보면 칫솔질 거부감 줄어듦"],
+   ["스키나베브 입욕제","1,780엔","헹구지 않아도 됨"],["쪽쪽이 클립","877엔",""],["피죤 면봉","327엔","오일 묻은 면봉 (코딱지용)"],
+   ["열사마 시트 아기용","547엔","0~2세 · 열날 때 붙이는 패치"],["리첼 스푼","1,980엔","색 변하는 숟가락 · 못생기고 비쌈"],
+   ["에디슨 바나나 치발기","748엔",""],["유모차 모빌","1,980엔",""],["베이비뵨 이유식 턱받이","2,970엔","한국이 더 비쌈"],
+   ["과즙망","1,210엔",""],["머리쿵 쿠션","2,530엔","비싼데 귀여움"],["푸 촉감책","—",""]]},
+ {id:"donki", shop:"돈키호테", note:"쿠폰 받으면 저렴 · 5만원 이상 면세 · 마루이 3층(도보 7분) / 나카스점(24시간)",
+  items:[["동전파스","",""],["휴족시간","",""],["샤론파스","",""],["카베진","","위장약"],["퍼펙트휩","",""],["이치란 라멘","",""],["곤약젤리","",""],["카레","",""],["킷캣","",""]]},
+ {id:"montbell", shop:"몽벨 (텐진)", note:"⚠️ 텐진점은 면세 불가라는 이야기 → 면세 필요하면 다른 지점",
+  items:[["버사라이트 20L 백팩 (화이트)","9,700엔",""],["포커블 베이비 캐리어 워머","","아기 방한 커버 · 한국 8,400원"],["포커블 아기띠","","굳이 싶음"],["동전지갑","1,300엔",""]]},
+ {id:"etc", shop:"그 외", note:"",
+  items:[["스탠다드 프로덕트","","보냉백·장바구니·그릇 · 면세 안 됨 → 굳이 안 가도 됨"],["유니클로","","바디수트 — 한국보다 싸고 디자인 귀여움 · 텐진점 프린트 가능"],["무인양품","","선미스트"]]}
+];
 const KL={food:"먹기",move:"이동",see:"보기",shop:"쇼핑",rest:"휴식"};
 
 /* ========== utils ========== */
@@ -475,11 +490,19 @@ const S={
  shop(){
   return {title:"쇼핑", html:`
    <div class="list">
+     <div class="row" data-go="#/shop/buy"><span style="font-size:22px">🛒</span><span class="mid"><div class="ttl">일본에서 살 것</div><div class="sub">아카쨩혼포 · 돈키호테 · 몽벨 · 유니클로</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/souv"><span style="font-size:22px">🎁</span><span class="mid"><div class="ttl">기념품</div><div class="sub">토 18:20 하카타역 마잉 · 유통기한</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/spots"><span style="font-size:22px">📍</span><span class="mid"><div class="ttl">날짜별 쇼핑 스팟</div><div class="sub">토 하카타역 · 일 텐진 · 월 라라포트</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/baby"><span style="font-size:22px">🍼</span><span class="mid"><div class="ttl">아기용품</div><div class="sub">면세점 구매 예정 · 8개</div></span><span class="chev">›</span></div>
    </div>`};
  },
+ buy(){const st=store.get("buy")||{};
+  return {title:"일본에서 살 것", html:`
+   <p class="note" style="margin:0 4px 10px">구글 시트 '일본구매' 정리 · 체크하면 저장돼요</p>
+   ${BUY.map(g=>`<h2 class="sec">${esc(g.shop)}</h2>${g.note?`<p class="note" style="margin:-4px 4px 8px">${esc(g.note)}</p>`:""}
+     <div class="list">${g.items.map((it,i)=>{const id=g.id+i,on=!!st[id];
+       return `<label class="check${on?" done":""}"><input type="checkbox" data-ck="buy" data-id="${id}" ${on?"checked":""}>
+         <span class="tx" style="flex:1">${esc(it[0])}${it[1]?` <b>${esc(it[1])}</b>`:""}${it[2]?`<small>${esc(it[2])}</small>`:""}</span></label>`}).join("")}</div>`).join("")}`}},
  souv(){return {title:"기념품", html:`
    <div class="card small">토요일 18:20 <b>하카타역 마잉·데이토스</b>에서 한 번에 → 3일차 밤 캐리어에 → 4일차 카고패스로 공항까지</div>
    <h2 class="sec">살 것</h2>${checklist("souv",SOUV)}
@@ -590,7 +613,7 @@ const S={
 };
 
 /* ========== router ========== */
-const TAB_OF={home:"home",days:"days",i:"days",eat:"eat",shop:"shop",souv:"shop",spots:"shop",baby:"shop",more:"more",map:"more",bag:"more",todo:"more",rain:"more",info:"more",walk:"more",near:"more",route:"more"};
+const TAB_OF={home:"home",days:"days",i:"days",eat:"eat",shop:"shop",souv:"shop",spots:"shop",baby:"shop",buy:"shop",more:"more",map:"more",bag:"more",todo:"more",rain:"more",info:"more",walk:"more",near:"more",route:"more"};
 function parse(){
  const p=(location.hash||"#/home").slice(2).split("/");
  let [a,b,c]=p;
