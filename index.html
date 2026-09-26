@@ -173,18 +173,17 @@ const DAYS = [
     {t:"20:00", k:"shop", ttl:"편의점 투어", memo:"세븐일레븐 스무디 · 편의점 디저트", d:{"스무디":"298~420엔 · 컵을 사서 매장 기계로 직접 갈기"}, tips:["재미용","도착한 날이라 여기서 마무리"]},
     {t:"20:30", k:"rest", ttl:"호텔 · 욕조 목욕", memo:"전 객실 깊은 욕조"}
    ]},
- { id:"d2", w:"토", date:"9/26", iso:"2026-09-26", title:"다자이후 · 하카타역", sub:"11시 초밥 → 다자이후 (저녁까지) → 하카타역 쇼핑", map:"sat",
+ { id:"d2", w:"토", date:"9/26", iso:"2026-09-26", title:"하카타역 실내 쇼핑", sub:"11시 초밥 → 하카타역 쇼핑 · ☔ 비로 다자이후 취소", map:"sat",
    items:[
     {t:"11:00", k:"food", must:1, m:"e2", ttl:"초밥 · 스시갓포 야마나카 (점심)", memo:"JR 하카타시티 9층 · 4인 예약", d:{"영업":"점심 11:00~15:00 (L.O. 14:30) · 저녁 17:00~22:00","예약":"4인 · 11:00 ✅","평점":"타베로그 3.62"}, tips:["예약 완료 ✅","본점이 아닌 공식 지점"], map:"鮨割烹やま中 JR博多シティ", tel:"0924096688"},
-    {t:"12:30", k:"move", ttl:"🚕 우버 택시 → 다자이후", memo:"지쿠시구치(筑紫口) 예약 택시 승차장 · 30~40분 · 약 6,000~7,000엔", d:{"타는 곳":"博多駅筑紫口 予約タクシー乗り場(하카타역 지쿠시구치 예약 택시 승차장) — JR 하카타시티에서 역 안 통로로 지쿠시구치(筑紫口)까지 도보 5분 · 지쿠시구치 정면 로터리, 택시 하차장 바로 뒤","내리는 곳":"西鉄 太宰府駅(니시테츠 다자이후역) 앞 로터리 → 참배길 입구","요금":"미터 약 6,000~7,000엔 (약 17km) · 도시고속을 타면 통행료 별도"}, tips:["식사 끝나기 10분 전 앱 호출","토요일 오후는 참배길 앞 도로가 붐빔 → 역 앞 로터리에서 하차"], map:"博多駅筑紫口 予約タクシー乗り場"},
-    {t:"13:15", k:"see", ttl:"다자이후 텐만구 · 참배길", memo:"스타벅스 오모테산도점 · 우메가에모치", tips:["학문의 신을 모신 신사","스타벅스는 구마 겐고 설계 나무 격자 건물","참배길 간식 우메가에모치","참배길 가게는 17:00~17:30에 대부분 닫음 → 간식·기념품은 그 전에"], map:"太宰府天満宮"},
-    {t:"14:30", k:"see", ttl:"규슈 국립박물관", memo:"에스컬레이터 터널로 연결", d:{"개관":"09:30~17:00 (입관 16:30) · 월요일 휴관","관람료":"평상 전시 일반 700엔"}, tips:["실내·앉을 곳 많음","월요일 휴관이라 토요일이 기회","16:30쯤 나와서 저녁 식당으로"], map:"九州国立博物館"},
-    {t:"17:00", k:"food", ttl:"저녁 · 우메노하나 다자이후 (두부·유바 가이세키)", memo:"텐만구 뒤편 · 개별실 · 예약 권장", d:{"가게":"梅の花 太宰府別荘 自然庵(우메노하나 다자이후 별장 지넨안)","영업":"저녁 16:30~21:00 (L.O. 20:00)","위치":"太宰府天満宮(다자이후 텐만구) 뒤편 · 宰府4-4-41","예약":"전화 092-928-7787 또는 웹 예약","대안":"참배길 가게는 17:00~17:30에 대부분 닫음 → 못 가면 하카타로 돌아와 역 식당가 (JR 하카타시티 쿠우텐 9·10층, 새벽 1시까지)"}, tips:["개별실·다다미방 → 아기랑 편함","박물관·텐만구에서 가까움 — 걷기 멀면 우버","今日17時、4名で予約できますか (오늘 17시 4명 예약 되나요?)"], map:"梅の花 太宰府別荘 自然庵", tel:"0929287787"},
-    {t:"18:15", k:"move", ttl:"🚕 우버 택시 → 하카타역", memo:"식당 앞 · 35~45분 · 약 6,000~7,000엔", d:{"타는 곳":"梅の花 太宰府別荘 自然庵(우메노하나) 가게 앞 — 핀을 가게로","안 잡힐 때":"다자이후 쪽은 차가 적음 → 18:00쯤 식사 끝날 때 미리 호출 · 그래도 없으면 西鉄 太宰府駅(니시테츠 다자이후역) 앞 로터리","내리는 곳":"博多駅 博多口(하카타역 하카타구치) — 한큐 백화점 바로 앞","요금":"약 6,000~7,000엔"}, tips:["토요일 저녁 도시고속 정체 가능 → 한큐 20:00 마감 주의"], map:"梅の花 太宰府別荘 自然庵"},
-    {t:"19:00", k:"shop", ttl:"하카타역 쇼핑", memo:"한큐 백화점 먼저 (20:00 마감) → 아뮤플라자 · 칼디 (21:00)", d:{"영업":"한큐 10:00~20:00 · 아뮤플라자 10:00~21:00"}, tips:["전부 역과 연결된 실내","칼디 아뮤플라자 3층 · 10:00~21:00","한큐 7층 베이비·키즈 층 · 베이비룸"], map:"アミュプラザ博多"},
-    {t:"20:00", k:"shop", ttl:"마잉·데이토스 기념품 · 푸딩", d:{"영업":"마잉 09:00~21:00"}, memo:"토리몬 · 멘베이 · 프링글스 · 카스테라", tips:["니시도리 푸딩 마잉점 09:00~21:00 · 포셰 약 300엔","지이치로 (다이마루) 진한 계란 푸딩","기념품은 4일차 카고패스 캐리어에"], map:"マイング 博多駅"},
-    {t:"20:30", k:"shop", ttl:"스탠다드 프로덕트", memo:"하카타 버스터미널 5층 · 다이소·THREEPPY · 21:00까지", d:{"영업":"09:00~21:00"}, map:"Standard Products 博多バスターミナル店"},
-    {t:"21:00", k:"rest", ttl:"호텔", memo:"도보 5분"}
+    {t:"12:30", k:"shop", ttl:"하카타역 쇼핑 · 아뮤플라자 · 칼디", memo:"초밥 먹은 건물 그대로 · 칼디 3층", d:{"영업":"아뮤플라자 10:00~21:00"}, tips:["전부 역과 연결된 실내","칼디 아뮤플라자 3층 · 10:00~21:00"], map:"アミュプラザ博多"},
+    {t:"13:45", k:"shop", ttl:"한큐 백화점", memo:"7층 베이비·키즈 · 역 건물 안", d:{"영업":"10:00~20:00"}, tips:["7층 베이비룸 (수유·기저귀)","저녁엔 20:00 마감이라 낮에"], map:"博多阪急"},
+    {t:"14:45", k:"shop", ttl:"KITTE 하카타 · 마루이", memo:"하카타구치 바로 앞 · 키라키라 돈키 3층 · REC COFFEE 6층", d:{"영업":"10:00~21:00","돈키":"마루이 3층 · 과자·화장품·기념품 · 면세","카페":"REC COFFEE 6층 · 에스프레소 330엔 · 드립 430엔~"}, tips:["쇼핑 중간 커피 쉬는 곳","저녁 후보 하나미도리도 이 건물 9층"], map:"KITTE博多"},
+    {t:"16:00", k:"rest", ttl:"호텔 휴식", memo:"지쿠시구치 도보 2분 · 우산", d:{"로피아":"요도바시 하카타 · 10:00~20:00 · 호텔 바로 옆 · 과일·야식"}},
+    {t:"17:15", k:"shop", ttl:"스탠다드 프로덕트", memo:"하카타 버스터미널 5층 · 다이소·THREEPPY · 09:00~21:00", d:{"영업":"09:00~21:00"}, map:"Standard Products 博多バスターミナル店"},
+    {t:"18:00", k:"food", ttl:"저녁 · 하카타역 (후보)", memo:"미즈타키 · 한입 교자 · 역 식당가", d:{"① 미즈타키":"博多華味鳥(하카타 하나미도리) KITTE하카타점 9층 · 11:00~23:00 (L.O. 22:00) · 개별실 · 당일 예약은 전화 092-292-3346","② 한입 교자":"旭軒(아사히켄) 에키마에 본점 · 하카타구치(博多口) 도보 3분 · 15:00~23:30 · 일요일 휴무 → 오늘이 기회 · 작고 붐빔 · 포장 가능","③ 역 식당가":"JR 하카타시티 쿠우텐 9·10층 · 11:00~새벽 1:00"}, tips:["아기랑 편하게는 ① (개별실) → 지금 전화 추천","비 올 땐 ①·③이 건물 안이라 편함","今日18時、4名で予約できますか (오늘 18시 4명 예약 되나요?)"], map:"博多華味鳥 KITTE博多店", tel:"0922923346"},
+    {t:"19:30", k:"shop", ttl:"마잉·데이토스 기념품 · 푸딩", d:{"영업":"마잉 09:00~21:00"}, memo:"토리몬 · 멘베이 · 프링글스 · 카스테라", tips:["니시도리 푸딩 마잉점 09:00~21:00 · 포셰 약 300엔","지이치로 (다이마루) 진한 계란 푸딩","기념품은 4일차 카고패스 캐리어에"], map:"マイング 博多駅"},
+    {t:"20:30", k:"rest", ttl:"호텔", memo:"도보 5분"}
    ]},
  { id:"d3", w:"일", date:"9/27", iso:"2026-09-27", title:"나카스 · 오호리 · 텐진", sub:"우버 택시로 이동 · 한 번에 5~15분", map:"sun",
    items:[
@@ -219,12 +218,6 @@ const DAYS = [
     {t:"16:00", k:"food", ttl:"이른 저녁 · HAKATA FOOD HALL", memo:"출국 심사 후 3층", tips:["고짱 라멘 — 가벼운 돈코츠","다케노야 — 닭껍질 꼬치·장어","우미노 식당 — 해산물 덮밥","라쿠텐치 — 모츠나베","한국에서 먹을 거면 간식만"]}
    ]}
 ];
-/* ---- 비 코멘트 (기본안) ---- */
-(function(){
-  const d2 = DAYS[1].items, f = x => d2.find(it => it.ttl.includes(x));
-  (f("텐만구").tips = f("텐만구").tips || []).push("☔ 비: 본전·회랑은 지붕 있음 · 돌길 미끄럼 주의 · 참배길은 짧게, 찻집에 앉아서");
-  (f("박물관").tips = f("박물관").tips || []).push("☔ 비: 터널로 젖지 않음 → 박물관 비중 늘리기");
-})();
 
 /* ---- 우천 B안: 토요일 ↔ 월요일 교환 ---- */
 const PLAN_B_INFO = "토요일 비가 계속 내리거나 강하고 월요일이 더 나을 때만. 토요일 아침에 결정. 감수할 것: 월요일 박물관 휴관 · 토요일 라라포트 붐빔 · 뉴건담(야외)은 비 오면 보기 불편";
@@ -237,7 +230,7 @@ const PLAN_B = {
           {t:"13:00", k:"see", ttl:"라라포트", memo:"건담 파크 · 쇼핑 · 아카창혼포", d:{"영업":"10:00~21:00","아카창혼포":"3층 · 10:00~21:00"}, tips:["실물 크기 뉴건담은 야외 → 비 오면 창가에서만","토요일이라 붐빔"], map:"ららぽーと福岡"},
           {t:"17:00", k:"food", ttl:"저녁 · 그랜드 다이닝", memo:"라라포트 3층", tips:["焼肉重(야키니쿠주) 미쓰보시 — 소고기·파소금 우설덮밥","왓파 정식당 — 1,000엔 전후","우마야 — 우설 토로로 정식","징딩러우 — 샤오롱바오"]},
           {t:"18:15", k:"move", ttl:"버스 → 하카타", memo:"약 18분"},
-          f("하카타역 쇼핑"), f("마잉"), f("스탠다드"), f("호텔")
+          Object.assign({}, f("하카타역 쇼핑"), {t:"19:00"}), Object.assign({}, f("마잉"), {t:"20:00"}), Object.assign({}, f("스탠다드"), {t:"20:30"}), Object.assign({}, f("호텔"), {t:"21:00"})
         ]})() },
   d4: { title:"☔ B안 · 다자이후 → 공항", sub:"우천 B안 — 짐은 카고패스, 다자이후에서 공항 직행", map:"b4",
         ov:{t:"☔ B안 · 카고패스 → 다자이후 → 공항", m:"13:40 공항 버스"},
@@ -393,7 +386,7 @@ function mapSVG(f){
   ${sg("cab","fri","M230 145 C280 120 320 118 352 132")}
   ${sg("cab","mon","M230 145 C245 190 262 230 290 262")}${sg("bus","b2","M230 145 C245 190 262 230 290 262")}
   ${sg("cab","mon","M290 262 C325 235 345 180 352 132")}
-  ${sg("cab","sat","M230 145 C285 205 330 255 370 300")}${sg("bus","b4","M230 145 C285 205 330 255 370 300")}${sg("bus","b4","M370 300 C394 250 386 180 352 132")}
+  ${sg("bus","b4","M230 145 C285 205 330 255 370 300")}${sg("bus","b4","M370 300 C394 250 386 180 352 132")}
   ${sg("bag","fri mon b4","M236 158 C280 148 318 146 348 146")}
   ${nd("sun",`<circle class="stn" cx="34" cy="150" r="9"/><text class="lbl" x="18" y="184">오호리</text>`)}
   ${nd("sun",`<circle class="stn" cx="120" cy="142" r="10"/><text class="lbl" x="104" y="176">텐진</text>`)}
@@ -401,10 +394,10 @@ function mapSVG(f){
   ${nd("fri sat sun mon b2 b4",`<circle class="stn" cx="230" cy="145" r="12"/><text class="lbl" x="214" y="188" text-anchor="end">🏨 하카타</text>`)}
   ${nd("fri mon b4",`<circle class="stn" cx="352" cy="132" r="11"/><text class="lbl" x="352" y="106" text-anchor="middle">공항</text>`)}
   ${nd("mon b2",`<circle class="stn" cx="290" cy="262" r="10"/><text class="lbl" x="290" y="294" text-anchor="middle">라라포트</text>`)}
-  ${nd("sat b4",`<circle class="stn" cx="370" cy="300" r="9"/><text class="lbl" x="396" y="334" text-anchor="end">다자이후</text>`)}
+  ${nd("b4",`<circle class="stn" cx="370" cy="300" r="9"/><text class="lbl" x="396" y="334" text-anchor="end">다자이후</text>`)}
   ${on("fri")?'<text class="tm" x="262" y="112">15분</text>':""}
   ${on("mon")?'<text class="tm" x="208" y="222">10분</text><text class="tm" x="336" y="214">15분</text>':on("b2")?'<text class="tm" x="208" y="222">18분</text>':""}${on("b4")?'<text class="tm" x="388" y="220">25분</text>':""}
-  ${on("sat")?'<text class="tm" x="318" y="268">35분</text>':on("b4")?'<text class="tm" x="318" y="268">40분</text>':""}
+  ${on("b4")?'<text class="tm" x="318" y="268">40분</text>':""}
  </svg>`;
 }
 const legend=`<div class="legend"><span><i style="border-color:var(--amber)"></i>우버 택시</span><span><i style="border-color:var(--blue);border-top-style:dashed"></i>버스</span><span><i style="border-color:var(--violet);border-top-style:dotted"></i>짐</span><span>🏨 숙소</span></div>`;
@@ -497,7 +490,7 @@ const S={
   return {title:"쇼핑", html:`
    <div class="list">
      <div class="row" data-go="#/shop/buy"><span style="font-size:22px">🛒</span><span class="mid"><div class="ttl">일본에서 살 것</div><div class="sub">아카쨩혼포 · 돈키호테 · 몽벨 · 유니클로</div></span><span class="chev">›</span></div>
-     <div class="row" data-go="#/shop/souv"><span style="font-size:22px">🎁</span><span class="mid"><div class="ttl">기념품</div><div class="sub">토 20:00 하카타역 마잉 · 유통기한</div></span><span class="chev">›</span></div>
+     <div class="row" data-go="#/shop/souv"><span style="font-size:22px">🎁</span><span class="mid"><div class="ttl">기념품</div><div class="sub">토 19:30 하카타역 마잉 · 유통기한</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/spots"><span style="font-size:22px">📍</span><span class="mid"><div class="ttl">날짜별 쇼핑 스팟</div><div class="sub">토 하카타역 · 일 텐진 · 월 라라포트</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/living"><span style="font-size:22px">🪴</span><span class="mid"><div class="ttl">리빙 · 소품</div><div class="sub">리버레인몰 4곳 · 텐진 4곳</div></span><span class="chev">›</span></div>
      <div class="row" data-go="#/shop/baby"><span style="font-size:22px">🍼</span><span class="mid"><div class="ttl">아기용품</div><div class="sub">면세점 구매 예정 · 8개</div></span><span class="chev">›</span></div>
@@ -511,7 +504,7 @@ const S={
        return `<label class="check${on?" done":""}"><input type="checkbox" data-ck="buy" data-id="${id}" ${on?"checked":""}>
          <span class="tx" style="flex:1">${esc(it[0])}${it[1]?` <b>${esc(it[1])}</b>`:""}${it[2]?`<small>${esc(it[2])}</small>`:""}</span></label>`}).join("")}</div>`).join("")}`}},
  souv(){return {title:"기념품", html:`
-   <div class="card small">토요일 20:00 <b>하카타역 마잉·데이토스</b>에서 한 번에 → 3일차 밤 캐리어에 → 4일차 카고패스로 공항까지</div>
+   <div class="card small">토요일 19:30 <b>하카타역 마잉·데이토스</b>에서 한 번에 → 3일차 밤 캐리어에 → 4일차 카고패스로 공항까지</div>
    <h2 class="sec">살 것</h2>${checklist("souv",SOUV)}
    <p class="note">공항은 예비. 국제선 매장은 품목이 적을 수 있어요.</p>`}},
  spots(){return {title:"날짜별 쇼핑 스팟", html:`
@@ -605,7 +598,7 @@ const S={
    </div>
    <h2 class="sec">날짜별 대안</h2>
    <div class="list">
-     <div class="row static"><span class="tm">토</span><span class="bar"></span><span class="mid"><div class="ttl" style="white-space:normal">점심 초밥 후 다자이후는 박물관 위주 → 하카타 복귀</div><div class="sub" style="white-space:normal">하카타역은 전부 실내</div></span></div>
+     <div class="row static"><span class="tm">토</span><span class="bar"></span><span class="mid"><div class="ttl" style="white-space:normal">다자이후 취소 → 하카타역 실내 쇼핑 (확정)</div><div class="sub" style="white-space:normal">하카타역은 전부 실내</div></span></div>
      <div class="row static"><span class="tm">일</span><span class="bar"></span><span class="mid"><div class="ttl" style="white-space:normal">오호리 생략 → 명란 → 텐진 지하상가 → 이치란 → 리버레인 → 호텔</div><div class="sub" style="white-space:normal">강변 야경 취소 · 빵집만 택시로</div></span></div>
      <div class="row static"><span class="tm">월</span><span class="bar"></span><span class="mid"><div class="ttl" style="white-space:normal">짐은 카고패스로 먼저 → 비 와도 빈손</div><div class="sub" style="white-space:normal">라라포트 정류장 건물 직결</div></span></div>
    </div>
