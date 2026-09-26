@@ -328,6 +328,23 @@ const NEAR = {
        ["칼디 (아뮤플라자 3층)","도보 5분","10:00~21:00","원두·세계 식료품 사는 곳"],
        ["FUK COFFEE","도보 10분","확인 필요","푸딩+커피 1,000~1,500엔"]]
 };
+/* ---- 저렴이: 하카타역 싸게 먹기 (면 요리 제외) ---- */
+const CHEAP = [
+ {g:"🍚 앉아서 먹기 (1인 1,000엔 안팎)", rows:[
+  {em:"⭐", n:"야요이켄 지쿠시구치점", jp:"やよい軒 筑紫口店", cat:"일본식 정식 체인 · 생선구이·닭튀김·돈가스 정식", price:"정식 1세트 약 1,000엔 · 밥 리필", loc:"하카타 터미널 호텔 1층 (博多駅東2-1-26) · 지쿠시구치 쪽, 호텔 가는 길", hours:"06:30~23:00", note:"입구 식권 발매기에서 사진 보고 주문", map:"やよい軒 筑紫口店"},
+  {em:"🥟", n:"아사히켄 에키마에 본점", jp:"旭軒 駅前本店", cat:"한입 교자 · 닭날개", price:"군만두 10개 340엔 · 물만두 10개 340엔 · 닭날개 1개 90엔 · 밥 110~160엔 · 된장국 110엔 → 1인 약 800엔", loc:"하카타구치 도보 3분 (博多駅前2-15-22) · 우산 필요", hours:"15:00~23:30 · 일요일 휴무", note:"작고 붐빔 · 포장 가능", map:"旭軒 駅前本店"},
+  {em:"🍢", n:"요카타이 마잉점", jp:"よかたい マイング店", cat:"서서 마시는 선술집 · 교자·닭날개", price:"한입 교자 6개 297엔 · 닭날개 튀김 1개 143엔", loc:"역 1층 마잉 요코초 (マイング横丁)", hours:"10:00~23:00", note:"서서 먹는 곳", map:"よかたい マイング"},
+  {em:"🥚", n:"우치노 다마고 직매소", jp:"うちのたまご直売所", cat:"달걀 요리 · 달걀밥(다마고카케고항)·오야코동", price:"명란 달걀밥 약 600엔", loc:"역 1층 마잉 요코초 (マイング横丁)", hours:"요코초 07:00~23:00", note:"좁고 빨리 나옴 · 후불 · 카드 가능", map:"うちのたまご 博多直売所"},
+  {em:"🍱", n:"정식집 햐쿠사이 슌", jp:"定食屋 百菜 旬 博多一番街店", cat:"일본식 정식", price:"저녁 가격 확인 못 함", loc:"하카타역 지하 1층 하카타 1번가 (博多1番街)", hours:"확인 필요", note:"", map:"百菜 旬 博多一番街"},
+  {em:"🐟", n:"시라스쿠지라 이소가이", jp:"しらすくじら 博多漁家磯貝", cat:"해산물 선술집 · 쓰보다이 된장구이·해산물 구이·꼬치튀김·회", price:"생맥주 506엔 · 저녁은 안주 여러 개 시키는 방식이라 정식처럼 싸진 않음", loc:"데이토스 아넥스 2층 (デイトスアネックス 2F) · ☎ 092-409-0231", hours:"11:30~23:00 (L.O. 22:00)", note:"700엔 정식은 점심 메뉴", map:"しらすくじら 博多漁家磯貝"}
+ ]},
+ {g:"🛍️ 사 가서 먹기 (가장 저렴)", rows:[
+  {em:"🍱", n:"한큐 백화점 지하 1층 식품관", jp:"博多阪急 B1", cat:"도시락·반찬·생선구이·닭튀김", price:"20:00 폐점 전 할인 스티커 (시작 시각 미확인 → 19:30쯤)", loc:"JR 하카타시티 한큐 지하 1층", hours:"10:00~20:00", note:"", map:"博多阪急"},
+  {em:"🛒", n:"로피아", jp:"ロピア 博多ヨドバシ店", cat:"대용량 저가 도시락·과일", price:"저가", loc:"요도바시 하카타 4층 · 호텔 바로 옆", hours:"10:00~20:00", note:"", map:"ロピア 博多ヨドバシ店"},
+  {em:"🏪", n:"로손", jp:"ローソン 博多駅筑紫口店", cat:"편의점", price:"", loc:"호텔 바로 옆", hours:"24시간", note:"", map:"ローソン 博多駅筑紫口店"}
+ ]}
+];
+const CHEAP_PICK = [["싸고 제대로 한 끼","야요이켄 — 호텔 가는 길, 정식 약 1,000엔"],["가장 싸게","아사히켄 교자 1인 약 800엔 · 한큐 지하 할인 도시락"],["비 안 맞고 역 안에서","우치노 다마고 · 요카타이 (마잉 요코초)"]];
 const NEAR_PICK = [["자기 전 야식","호텔 옆 로손 (24시간)"],["스무디 (재미용)","세븐일레븐 지쿠시구치"],["과일·도시락 싸게","로피아 10:00~20:00"],["밤 10시 장보기","사니 스미요시점 (24시간)"],["커피 제대로","REC COFFEE 마루이 6층"],["비 오는 날 앉아 있기","츠루바미 코히칸 · REC COFFEE"]];
 /* ---- 일본에서 살 것 (구글 시트 '일본구매') ---- */
 const BUY = [
@@ -478,6 +495,7 @@ const S={
   const st=store.get("eat")||{};
   const foods=[];D().forEach(d=>d.items.forEach((it,i)=>{if(it.k==="food")foods.push([d,i,it])}));
   return {title:"먹기", html:`
+   <div class="list"><div class="row" data-go="#/cheap"><span style="font-size:22px">💴</span><span class="mid"><div class="ttl">저렴이</div><div class="sub">하카타역 싸게 먹기 · 정식 · 교자 · 할인 도시락</div></span><span class="chev">›</span></div></div>
    <h2 class="sec">필수 5미</h2>
    <div class="list">${EAT.map(e=>{const on=!!st[e.id];return `<label class="check${on?" done":""}"><input type="checkbox" data-eat="${e.id}" ${on?"checked":""}>
      <span style="font-size:22px">${e.em}</span><span class="tx" style="flex:1"><b>${e.n}</b><small>${esc(e.w)} · ${esc(e.p)}</small></span>
@@ -521,6 +539,7 @@ const S={
    ${r("#/more/map","🗺️","노선도","날짜별 동선 · 이동 시간")}
    ${r("#/more/bag","🧳","짐 동선","공항 ↔ 호텔 · 카고패스")}
    ${r("#/more/walk","🚶","산책 루트","도보 6개 · 편도 도보+택시 5개")}
+   ${r("#/cheap","💴","저렴이","하카타역 싸게 먹기")}
    ${r("#/more/near","🏪","호텔 근처","편의점 · 마트 · 카페")}
    ${r("#/more/todo","✅","예약 · 확인","할 일 체크리스트")}
    ${r("#/more/rain","☔","날씨 · 비 대비","예보 · 비 형태별 · 날짜별 대안")}
@@ -554,6 +573,21 @@ const S={
    </dl></div>
    <div class="card"><ul class="tips">${r.tips.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
    ${r.map?`<div class="btns"><a class="btn primary" target="_blank" rel="noopener" href="${M(r.map)}">📍 지도</a><div class="btn" data-go="#/more/walk">다른 루트</div></div>`:`<div class="btns"><div class="btn" data-go="#/more/walk">다른 루트</div></div>`}`}},
+ cheap(){return {title:"저렴이", html:`
+   <p class="note" style="margin:0 4px 10px">하카타역 싸게 먹기 · 면 요리 제외 · 가격은 인터넷 정보라 달라질 수 있어요</p>
+   <h2 class="sec">추천</h2>
+   <div class="list">${CHEAP_PICK.map(x=>`<div class="row static"><span class="mid" style="white-space:normal"><div class="ttl" style="white-space:normal">${esc(x[0])}</div><div class="sub" style="white-space:normal">${esc(x[1])}</div></span></div>`).join("")}</div>
+   ${CHEAP.map(g=>`<h2 class="sec">${esc(g.g)}</h2>${g.rows.map(r=>`<div class="card">
+     <div style="font-size:17px;font-weight:800;line-height:1.35">${r.em} ${esc(r.n)} <span class="muted small">${esc(r.jp)}</span></div>
+     <div class="muted small" style="margin-top:2px">${esc(r.cat)}</div>
+     <dl class="kv" style="margin-top:8px">
+       ${r.price?`<dt>가격</dt><dd>${esc(r.price)}</dd>`:""}
+       <dt>위치</dt><dd>${esc(r.loc)}</dd>
+       <dt>영업</dt><dd>${esc(r.hours)}</dd>
+       ${r.note?`<dt>참고</dt><dd>${esc(r.note)}</dd>`:""}
+     </dl>
+     <div class="btns" style="margin-top:8px"><a class="btn" target="_blank" rel="noopener" href="${M(r.map)}">📍 지도</a></div>
+   </div>`).join("")}`).join("")}`}},
  near(){const tb=(rows)=>`<div class="list">${rows.map(r=>`<div class="row static"><span class="mid" style="white-space:normal"><div class="ttl" style="white-space:normal">${esc(r[0])}</div><div class="sub" style="white-space:normal">${esc(r[1])} · ${esc(r[2])}</div><div class="sub" style="white-space:normal">${esc(r[3])}</div></span></div>`).join("")}</div>`;
   return {title:"호텔 근처", html:`
    <h2 class="sec">편의점</h2>${tb(NEAR.cvs)}
@@ -616,7 +650,7 @@ const S={
 };
 
 /* ========== router ========== */
-const TAB_OF={home:"home",days:"days",i:"days",eat:"eat",shop:"shop",souv:"shop",spots:"shop",baby:"shop",living:"shop",buy:"shop",more:"more",map:"more",bag:"more",todo:"more",rain:"more",info:"more",walk:"more",near:"more",route:"more"};
+const TAB_OF={cheap:"eat",home:"home",days:"days",i:"days",eat:"eat",shop:"shop",souv:"shop",spots:"shop",baby:"shop",living:"shop",buy:"shop",more:"more",map:"more",bag:"more",todo:"more",rain:"more",info:"more",walk:"more",near:"more",route:"more"};
 function parse(){
  const p=(location.hash||"#/home").slice(2).split("/");
  let [a,b,c]=p;
