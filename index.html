@@ -137,10 +137,11 @@ svg .nd.dim{opacity:.25}
 .pn .btn span{display:block;font-weight:500;color:var(--sub);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pn .btn.r{text-align:right}
 .note{font-size:12.5px;color:var(--sub);margin:10px 4px 0}
-.plan{display:grid;grid-template-columns:1fr 1.4fr;gap:6px;margin-bottom:10px}
+.plan{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;margin-bottom:10px}
 .plan button{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--sub);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 .plan button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .plan button[data-plan=B][aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.plan button[data-plan=C][aria-pressed=true]{background:var(--violet);border-color:var(--violet);color:#fff}
 </style>
 </head>
 <body>
@@ -252,9 +253,28 @@ const PLAN_B = {
           Object.assign({}, g("캐리어 수령"), {t:"14:50"}), g("이른 저녁 · HAKATA FOOD HALL")
         ]})() }
 };
-function planIsB(){ try { return JSON.parse(localStorage.getItem("fuk26:plan3")) === "B"; } catch(e){ return false; } }
-function setPlan(b){ try { localStorage.setItem("fuk26:plan3", JSON.stringify(b ? "B" : "A")); } catch(e){} }
-function D(){ return planIsB() ? DAYS.map(d => PLAN_B[d.id] ? Object.assign({}, d, PLAN_B[d.id]) : d) : DAYS; }
+const PLAN_C = {
+  d4: { title:"C안 · 하카타 구시가지 → 공항", sub:"쇼후쿠지 → 도초지 → 구시다 신사 → 라쿠스이엔 말차 → 하카타역 점심 → 공항", map:"c4",
+        items:(()=>{ const all = DAYS.flatMap(d => d.items), y = DAYS[3].items, g = t => y.find(it => it.ttl.includes(t)), a = t => all.find(it => it.ttl.includes(t)); return [
+          g("아침 (택1)"), g("체크아웃 · 카고패스"),
+          {say:{jp:"聖福寺までお願いします。御供所町です。", ko:"쇼후쿠지까지 가 주세요. 고쿠쇼마치예요.", rd:"쇼-후쿠지 마데 오네가이시마스. 고쿠쇼마치 데스."}, t:"09:45", k:"move", ttl:"🚕 우버 택시 → 쇼후쿠지 (구시가지)", memo:"지쿠시구치 예약 택시 승차장 · 약 10분 · 약 900~1,200엔", d:{"타는 곳 (1층)":"博多駅筑紫口 予約タクシー乗り場(하카타역 지쿠시구치 예약 택시 승차장) — 호텔 도보 2분 · 09:40쯤 호출","내리는 곳":"聖福寺(쇼후쿠지) 산문 앞 · 博多区御供所町6-1","요금":"약 900~1,200엔 (짧은 거리)"}, map:"博多駅筑紫口 予約タクシー乗り場"},
+          {t:"09:55", k:"see", ttl:"⛩️ 쇼후쿠지 聖福寺 · 일본 최초의 선종 절", memo:"경내 산책 약 20분 · 무료 · 1195년 창건", d:{"볼 것":"산문(山門)의 '扶桑最初禅窟(일본 최초의 선종 절)' 현판 · 불전(仏殿) · 일본 차의 발상지로 알려진 차나무","관람":"경내 자유 산책 · 건물 안은 보통 공개 안 함 (확인 못 함)","다음":"도초지까지 같은 절 동네(御供所町) · 도보 약 5분"}, map:"聖福寺 福岡"},
+          {t:"10:20", k:"see", ttl:"🛕 도초지 東長寺 · 후쿠오카 대불 · 오층탑", memo:"약 25분 · 경내 무료 · 대불전 100엔", d:{"영업":"09:00~16:45 · 연중무휴","요금":"경내 무료 · 대불전 100엔","볼 것":"후쿠오카 대불 (높이 10.8m, 일본 최대급 목조 좌불) · 오층탑 (높이 약 26m, 전부 나무) · 천수관음상 (국가 중요문화재)","위치":"博多区御供所町2-4 · 지하철 기온역 바로 앞"}, tips:["대불전 안 촬영은 안내문 확인","다음 구시다 신사까지 도보 약 10분 (평지)"], map:"東長寺 福岡"},
+          {t:"10:50", k:"see", ttl:"⛩️ 구시다 신사 櫛田神社 · 하카타 수호 신사", memo:"약 20분 · 무료 · 축제 가마 상시 전시", d:{"참배":"04:00~22:00 · 무료","볼 것":"장식 야마카사 (飾り山笠) = 하카타 기온 야마카사 축제용 높이 약 13m 장식 가마 · 연중 전시 (6월 제외)","⚠️ 하카타 역사관":"博多歴史館 = 월요일 휴관 → 이날은 못 봄","위치":"博多区上川端町1-41"}, map:"櫛田神社 博多"},
+          {say:{jp:"楽水園までお願いします。住吉です。", ko:"라쿠스이엔까지 가 주세요. 스미요시예요.", rd:"라쿠스이엔 마데 오네가이시마스. 스미요시 데스."}, t:"11:10", k:"move", ttl:"🚕 우버 택시 → 라쿠스이엔", memo:"구시다 신사 앞 · 약 5분 · 약 700~1,000엔", d:{"타는 곳":"櫛田神社(구시다 신사) 정문 앞 도로 — 핀을 신사로 · 11:05쯤 호출","내리는 곳":"楽水園(라쿠스이엔) 입구 · 博多区住吉2-10-7","요금":"약 700~1,000엔"}, tips:["11:20 말차 회차에 맞추기"], map:"櫛田神社 博多"},
+          {t:"11:20", k:"rest", ttl:"🍵 휴식 · 라쿠스이엔 楽水園 · 일본 정원 말차", memo:"11:20 말차 회차 · 앉아서 40분 쉬기", d:{"영업":"09:00~17:00 · 화요일 휴무 (월요일 영업) · 마지막 입장 16:30","요금":"입장 100엔 · 말차 1,100엔 (일본 과자 포함 · 입장료 별도)","말차 시간":"오전 10:00 · 10:40 · 11:20 / 오후 14:00 · 14:40 · 15:20 · 한 회 8명까지 · 당일 창구 접수 (선착순)","볼 것":"메이지 시대 하카타 상인의 별장을 고친 다실 + 연못을 한 바퀴 도는 일본 정원","위치":"博多区住吉2-10-7 · 1층 (다실·정원)"}, tips:["도착하자마자 창구에서 말차 접수","11:20 회차가 차면 정원을 보며 쉬기"], map:"楽水園 博多", tel:"0922626665"},
+          {say:{jp:"博多駅の博多口までお願いします。", ko:"하카타역 하카타구치까지 가 주세요.", rd:"하카타에키노 하카타구치 마데 오네가이시마스."}, t:"12:05", k:"move", ttl:"🚕 우버 택시 → 하카타역", memo:"라쿠스이엔 앞 · 약 5~10분 · 약 700~1,000엔", d:{"타는 곳":"楽水園(라쿠스이엔) 입구 앞 도로 — 말차 끝나기 5분 전 호출","내리는 곳 (1층)":"博多駅 博多口(하카타역 하카타구치) 택시 하차장","요금":"약 700~1,000엔"}, map:"楽水園 博多"},
+          Object.assign({}, a("저녁 · 하카타역 안"), {t:"12:15", ttl:"🍽️ 점심 · 하카타역 쿠우텐 (아뮤 9·10층) · 후보", memo:"앉아서 여유 있게 · 대부분 11:00부터 · 1순위 하마다야 미즈타키 10층", tips:["쿠우텐 CITY DINING KUTEN (シティダイニングくうてん) = 아뮤 9·10층 식당가 · 하카타구치에서 엘리베이터로"]}),
+          Object.assign({}, a("마잉 · 데이토스 기념품"), {t:"13:30", memo:"(선택) 일요일에 못 산 것만 · 아임릴리는 1층 잇핀니시도리 08:30~20:30"}),
+          {say:{jp:"福岡空港の国際線ターミナルまでお願いします。", ko:"후쿠오카 공항 국제선 터미널까지 가 주세요.", rd:"후쿠오카 쿠-코-노 코쿠사이센 타-미나루 마데 오네가이시마스."}, t:"14:15", k:"move", ttl:"🚕 우버 택시 → 공항 국제선", memo:"지쿠시구치 예약 택시 승차장 · 약 15~20분 · 약 1,700~2,000엔", d:{"타는 곳 (1층)":"博多駅筑紫口 予約タクシー乗り場(하카타역 지쿠시구치 예약 택시 승차장) — 역 1층 중앙 통로로 하카타구치에서 도보 약 5분 · 14:05쯤 호출","내리는 곳 (1층)":"福岡空港 国際線ターミナル(후쿠오카공항 국제선 터미널) 1층 · 카고패스 카운터도 1층","요금":"약 1,700~2,000엔"}, map:"博多駅筑紫口 予約タクシー乗り場"},
+          Object.assign({}, g("캐리어 수령"), {t:"14:40"}), g("이른 저녁 · HAKATA FOOD HALL")
+        ]})() }
+};
+const PLANS = {B:PLAN_B, C:PLAN_C};
+const PLAN_LABEL = {d3:{A:"A안 · 텐진", B:"B안 · 다자이후·라라포트"}, d4:{A:"A안 · 라라포트", B:"B안 · 텐진", C:"C안 · 구시가지"}};
+function planOf(id){ try { const v = JSON.parse(localStorage.getItem("fuk26:plan-"+id)); if(v) return v; return JSON.parse(localStorage.getItem("fuk26:plan3")) === "B" ? "B" : "A"; } catch(e){ return "A"; } }
+function setPlan(id, v){ try { localStorage.setItem("fuk26:plan-"+id, JSON.stringify(v)); } catch(e){} }
+function D(){ return DAYS.map(d => { const p = PLANS[planOf(d.id)], o = p && p[d.id]; return o ? Object.assign({}, d, o) : d; }); }
 
 const EAT=[
  {id:"e1",em:"🍖",n:"함바그",w:"금 저녁",p:"키와미야 하카타점",at:["d1",3]},
@@ -411,23 +431,24 @@ function toMin(t){const m=t.match(/(\d{1,2}):(\d{2})/);return m?+m[1]*60+ +m[2]:
 
 /* ========== schematic map ========== */
 function mapSVG(f){
- const on=d=>{const tg=d.split(" ");if(f==="all")return !tg.every(x=>/^b\d$/.test(x));return tg.includes(f)};
- const hide=d=>f==="all"&&d.split(" ").every(x=>/^b\d$/.test(x));
+ const on=d=>{const tg=d.split(" ");if(f==="all")return !tg.every(x=>/^[bc]\d$/.test(x));return tg.includes(f)};
+ const hide=d=>f==="all"&&d.split(" ").every(x=>/^[bc]\d$/.test(x));
  const sg=(cls,d,path)=>hide(d)?"":`<path class="sg ${cls}${on(d)?"":" dim"}" d="${path}"/>`;
  const nd=(d,inner)=>`<g class="nd${on(d)?"":" dim"}">${inner}</g>`;
  return `<svg viewBox="0 0 400 340" role="img" aria-label="단순화 노선도">
   <path class="sea" d="M0 0H400V44C330 36 290 58 240 44C190 30 140 52 90 40C50 31 20 44 0 38Z"/>
   ${sg("cab","sun b4","M230 145 C200 170 150 168 120 142")}${sg("cab","sun","M120 142 L165 105")}${sg("cab","sun b3","M165 105 L230 145")}
-  ${sg("cab","fri","M230 145 C280 120 320 118 352 132")}
+  ${sg("cab","fri c4","M230 145 C280 120 320 118 352 132")}${sg("cab","c4","M230 145 C225 180 205 205 170 222")}
   ${sg("cab","mon","M230 145 C245 190 262 230 290 262")}
   ${sg("cab","mon","M290 262 C325 235 345 180 352 132")}
   ${sg("cab","b3","M230 145 C285 205 330 255 370 300")}${sg("cab","b3","M370 300 C340 290 310 275 290 262")}${sg("cab","b3","M290 262 C240 220 190 150 165 105")}${sg("cab","b4","M120 142 C200 90 300 100 352 132")}
-  ${sg("bag","fri mon b4","M236 158 C280 148 318 146 348 146")}
+  ${sg("bag","fri mon b4 c4","M236 158 C280 148 318 146 348 146")}
   ${nd("sun b4",`<circle class="stn" cx="120" cy="142" r="10"/><text class="lbl" x="104" y="176">텐진</text>`)}
   ${nd("sun b3",`<circle class="stn" cx="165" cy="105" r="9"/><text class="lbl" x="165" y="82" text-anchor="middle">나카스 · 하루요시</text>`)}
-  ${nd("fri sat sun mon b3 b4",`<circle class="stn" cx="230" cy="145" r="12"/><text class="lbl" x="214" y="188" text-anchor="end">🏨 하카타</text>`)}
-  ${nd("fri mon b4",`<circle class="stn" cx="352" cy="132" r="11"/><text class="lbl" x="352" y="106" text-anchor="middle">공항</text>`)}
+  ${nd("fri sat sun mon b3 b4 c4",`<circle class="stn" cx="230" cy="145" r="12"/><text class="lbl" x="214" y="188" text-anchor="end">🏨 하카타</text>`)}
+  ${nd("fri mon b4 c4",`<circle class="stn" cx="352" cy="132" r="11"/><text class="lbl" x="352" y="106" text-anchor="middle">공항</text>`)}
   ${nd("mon b3",`<circle class="stn" cx="290" cy="262" r="10"/><text class="lbl" x="290" y="294" text-anchor="middle">라라포트</text>`)}
+  ${nd("c4",`<circle class="stn" cx="170" cy="222" r="9"/><text class="lbl" x="170" y="254" text-anchor="middle">구시가지</text>`)}
   ${nd("b3",`<circle class="stn" cx="370" cy="300" r="9"/><text class="lbl" x="396" y="334" text-anchor="end">다자이후</text>`)}
   ${on("fri")?'<text class="tm" x="262" y="112">15분</text>':""}
   ${on("mon")?'<text class="tm" x="208" y="222">10분</text><text class="tm" x="336" y="214">15분</text>':""}
@@ -485,7 +506,7 @@ const S={
   store.set("day",d.id);
   return {title:"일정", html:`
    <div class="seg">${D().map(x=>`<button data-go="#/days/${x.id}" aria-pressed="${x.id===d.id}">${x.date}<small>${x.w}</small></button>`).join("")}</div>
-   ${(d.id==="d3"||d.id==="d4")?`<div class="plan"><button data-plan="A" aria-pressed="${!planIsB()}">A안</button><button data-plan="B" aria-pressed="${planIsB()}">B안 (일 다자이후·라라포트 / 월 텐진)</button></div>`:""}
+   ${PLAN_LABEL[d.id]?`<div class="plan">${Object.entries(PLAN_LABEL[d.id]).map(([k,l])=>`<button data-plan="${k}" data-day="${d.id}" aria-pressed="${planOf(d.id)===k}">${l}</button>`).join("")}</div>`:""}
    <div style="margin:0 4px 10px"><div style="font-weight:800;font-size:17px">${esc(d.title)}</div><div class="small muted">${esc(d.sub)}</div></div>
    <div class="list">${d.items.map((it,i)=>row(d,i,it)).join("")}</div>
    <div class="btns"><div class="btn" data-go="#/map/${d.map}">🗺️ 이날 동선</div></div>`};
@@ -685,7 +706,7 @@ function render(){
 }
 window.addEventListener("hashchange",render);
 document.addEventListener("click",e=>{
- const pb=e.target.closest("[data-plan]"); if(pb){ setPlan(pb.dataset.plan==="B"); render(); return; }
+ const pb=e.target.closest("[data-plan]"); if(pb){ setPlan(pb.dataset.day, pb.dataset.plan); render(); return; }
  const g=e.target.closest("[data-go]");
  if(g&&!e.target.closest("input")){
   e.preventDefault();
