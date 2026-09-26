@@ -215,7 +215,23 @@ const DAYS = [
    ]}
 ];
 
-function D(){ return DAYS; }
+/* ---- 3일차 B안: 다자이후 ---- */
+const PLAN_B = {
+  d3: { title:"B안 · 다자이후 → 텐진 → 하루요시", sub:"다자이후 텐만구·박물관 → 텐진 지하상가 남쪽 → 18:00 잇케이 (필수)", map:"b3",
+        items:(()=>{ const x = DAYS[2].items, f = t => x.find(it => it.ttl.includes(t)); return [
+          f("호텔에서 간단히 아침"),
+          {say:{jp:"太宰府天満宮までお願いします。西鉄太宰府駅の前で大丈夫です。", ko:"다자이후 텐만구까지 가 주세요. 니시테츠 다자이후역 앞이면 괜찮아요.", rd:"다자이후 텐만구- 마데 오네가이시마스. 니시테츠 다자이후에키노 마에데 다이죠-부데스."}, t:"10:00", k:"move", ttl:"🚕 우버 택시 → 다자이후", memo:"지쿠시구치(筑紫口) 예약 택시 승차장 · 35~45분 · 약 6,000~7,000엔", d:{"타는 곳 (1층)":"博多駅筑紫口 予約タクシー乗り場(하카타역 지쿠시구치 예약 택시 승차장) — 지쿠시구치 정면 로터리, 택시 하차장 바로 뒤 · 호텔 도보 2분","내리는 곳 (1층)":"西鉄 太宰府駅(니시테츠 다자이후역) 앞 로터리 → 참배길 입구","요금":"약 6,000~7,000엔 (약 17km) · 도시고속 타면 통행료 별도"}, tips:["09:50쯤 앱 호출","일요일 오전이라 참배길 앞 도로 붐빔 → 역 앞에서 하차"], map:"博多駅筑紫口 予約タクシー乗り場"},
+          {t:"10:45", k:"see", ttl:"⛩️ 다자이후 텐만구 · 참배길 (太宰府天満宮)", memo:"학문의 신 · 본전·회랑은 지붕 있음 · 참배길 약 300m", d:{"참배길 (表参道)":"우메가에모치 (梅ヶ枝餅, 구운 찹쌀떡) · 스타벅스 다자이후 오모테산도점 (구마 겐고 설계 나무 격자 건물)","문 닫는 시간":"19:00","☔ 비":"돌길 미끄럼 주의 · 참배길은 짧게"}, map:"太宰府天満宮"},
+          {t:"12:00", k:"food", ttl:"🍽️ 점심 · 우메노하나 다자이후 (두부·유바 가이세키)", memo:"텐만구 뒤편 · 개별실 · 비 피해 앉아서 쉬기", d:{"가게":"梅の花 太宰府別荘 自然庵(우메노하나 다자이후 별장 지넨안)","층":"1층 (개별실·다다미방)","영업":"점심 11:00~16:30 (L.O. 15:30)","☎":"092-928-7787 · 웹 예약 가능","대안":"참배길 카사노야 (かさの家) · 1층 · 09:00~18:00 · 우메가에모치 + 간단한 식사"}, tips:["일요일이라 오전에 전화 예약 추천","今日12時、2名で予約できますか (오늘 12시 2명 예약 되나요?) — 인원은 바꿔서"], map:"梅の花 太宰府別荘 自然庵", tel:"0929287787"},
+          {t:"13:30", k:"see", ttl:"🏛️ 규슈 국립박물관 (九州国立博物館)", memo:"텐만구에서 에스컬레이터·무빙워크 터널(무지개 터널)로 연결 · 비 안 맞음", d:{"개관":"09:30~17:00 (입관 16:30) · 월요일 휴관 → 일요일이 기회","관람료":"평상 전시 일반 700엔"}, tips:["실내·의자 많음 → 휴식 겸"], map:"九州国立博物館"},
+          {say:{jp:"大丸福岡天神店までお願いします。", ko:"다이마루 후쿠오카 텐진점까지 가 주세요.", rd:"다이마루 후쿠오카 텐진텐 마데 오네가이시마스."}, t:"15:15", k:"move", ttl:"🚕 우버 택시 → 텐진 (다이마루)", memo:"박물관 택시 승강장 · 35~45분 · 약 6,000~7,000엔", d:{"타는 곳 (1층)":"九州国立博物館 タクシーのりば(규슈 국립박물관 택시 승강장) — 앱 핀도 박물관으로 · 15:00쯤 미리 호출","안 잡힐 때":"다자이후 쪽은 차가 적음 → 西鉄 太宰府駅(니시테츠 다자이후역) 앞 로터리","내리는 곳 (1층)":"大丸 福岡天神店(다이마루) 앞 — 하루요시 저녁 식당과 가까움","요금":"약 6,000~7,000엔"}, map:"九州国立博物館 タクシーのりば"},
+          Object.assign({}, f("텐진 지하상가 남쪽"), {t:"16:00"}),
+          f("잇케이 (하루요시)"), f("모츠나베 · 잇케이"), f("하카타역 (마잉)"), f("마잉 · 데이토스 기념품"), f("호텔 · 짐 싸기")
+        ]})() }
+};
+function planIsB(){ try { return JSON.parse(localStorage.getItem("fuk26:plan3")) === "B"; } catch(e){ return false; } }
+function setPlan(b){ try { localStorage.setItem("fuk26:plan3", JSON.stringify(b ? "B" : "A")); } catch(e){} }
+function D(){ return planIsB() ? DAYS.map(d => PLAN_B[d.id] ? Object.assign({}, d, PLAN_B[d.id]) : d) : DAYS; }
 
 const EAT=[
  {id:"e1",em:"🍖",n:"함바그",w:"금 저녁",p:"키와미야 하카타점",at:["d1",3]},
@@ -373,21 +389,23 @@ function toMin(t){const m=t.match(/(\d{1,2}):(\d{2})/);return m?+m[1]*60+ +m[2]:
 /* ========== schematic map ========== */
 function mapSVG(f){
  const on=d=>{const tg=d.split(" ");if(f==="all")return !tg.every(x=>/^b\d$/.test(x));return tg.includes(f)};
- const hide=d=>d.split(" ").every(x=>/^b\d$/.test(x));
+ const hide=d=>f==="all"&&d.split(" ").every(x=>/^b\d$/.test(x));
  const sg=(cls,d,path)=>hide(d)?"":`<path class="sg ${cls}${on(d)?"":" dim"}" d="${path}"/>`;
  const nd=(d,inner)=>`<g class="nd${on(d)?"":" dim"}">${inner}</g>`;
  return `<svg viewBox="0 0 400 340" role="img" aria-label="단순화 노선도">
   <path class="sea" d="M0 0H400V44C330 36 290 58 240 44C190 30 140 52 90 40C50 31 20 44 0 38Z"/>
-  ${sg("cab","sun","M230 145 C200 170 150 168 120 142")}${sg("cab","sun","M120 142 L165 105")}${sg("cab","sun","M165 105 L230 145")}
+  ${sg("cab","sun","M230 145 C200 170 150 168 120 142")}${sg("cab","sun b3","M120 142 L165 105")}${sg("cab","sun b3","M165 105 L230 145")}
   ${sg("cab","fri","M230 145 C280 120 320 118 352 132")}
   ${sg("cab","mon","M230 145 C245 190 262 230 290 262")}
   ${sg("cab","mon","M290 262 C325 235 345 180 352 132")}
+  ${sg("cab","b3","M230 145 C285 205 330 255 370 300")}${sg("cab","b3","M370 300 C300 250 180 200 120 142")}
   ${sg("bag","fri mon","M236 158 C280 148 318 146 348 146")}
-  ${nd("sun",`<circle class="stn" cx="120" cy="142" r="10"/><text class="lbl" x="104" y="176">텐진</text>`)}
-  ${nd("sun",`<circle class="stn" cx="165" cy="105" r="9"/><text class="lbl" x="165" y="82" text-anchor="middle">나카스 · 하루요시</text>`)}
-  ${nd("fri sat sun mon",`<circle class="stn" cx="230" cy="145" r="12"/><text class="lbl" x="214" y="188" text-anchor="end">🏨 하카타</text>`)}
+  ${nd("sun b3",`<circle class="stn" cx="120" cy="142" r="10"/><text class="lbl" x="104" y="176">텐진</text>`)}
+  ${nd("sun b3",`<circle class="stn" cx="165" cy="105" r="9"/><text class="lbl" x="165" y="82" text-anchor="middle">나카스 · 하루요시</text>`)}
+  ${nd("fri sat sun mon b3",`<circle class="stn" cx="230" cy="145" r="12"/><text class="lbl" x="214" y="188" text-anchor="end">🏨 하카타</text>`)}
   ${nd("fri mon",`<circle class="stn" cx="352" cy="132" r="11"/><text class="lbl" x="352" y="106" text-anchor="middle">공항</text>`)}
   ${nd("mon",`<circle class="stn" cx="290" cy="262" r="10"/><text class="lbl" x="290" y="294" text-anchor="middle">라라포트</text>`)}
+  ${nd("b3",`<circle class="stn" cx="370" cy="300" r="9"/><text class="lbl" x="396" y="334" text-anchor="end">다자이후</text>`)}
   ${on("fri")?'<text class="tm" x="262" y="112">15분</text>':""}
   ${on("mon")?'<text class="tm" x="208" y="222">10분</text><text class="tm" x="336" y="214">15분</text>':""}
  </svg>`;
@@ -444,6 +462,7 @@ const S={
   store.set("day",d.id);
   return {title:"일정", html:`
    <div class="seg">${D().map(x=>`<button data-go="#/days/${x.id}" aria-pressed="${x.id===d.id}">${x.date}<small>${x.w}</small></button>`).join("")}</div>
+   ${d.id==="d3"?`<div class="plan"><button data-plan="A" aria-pressed="${!planIsB()}">A · 텐진 실내</button><button data-plan="B" aria-pressed="${planIsB()}">B · 다자이후</button></div>`:""}
    <div style="margin:0 4px 10px"><div style="font-weight:800;font-size:17px">${esc(d.title)}</div><div class="small muted">${esc(d.sub)}</div></div>
    <div class="list">${d.items.map((it,i)=>row(d,i,it)).join("")}</div>
    <div class="btns"><div class="btn" data-go="#/map/${d.map}">🗺️ 이날 동선</div></div>`};
@@ -643,6 +662,7 @@ function render(){
 }
 window.addEventListener("hashchange",render);
 document.addEventListener("click",e=>{
+ const pb=e.target.closest("[data-plan]"); if(pb){ setPlan(pb.dataset.plan==="B"); render(); return; }
  const g=e.target.closest("[data-go]");
  if(g&&!e.target.closest("input")){
   e.preventDefault();
