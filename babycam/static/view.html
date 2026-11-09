@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>베이비캠</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Malgun Gothic", sans-serif; background: #000; color: #eee; transition: background .2s; }
+  body.alert { background: #8a1010; }
+  .wrap { position: relative; }
+  video { display: block; width: 100%; max-height: 72vh; object-fit: contain; background: #000; }
+  video.night { filter: grayscale(1) brightness(1.7) contrast(1.25); }
+  video.flip { transform: rotate(180deg); }
+  .status { position: absolute; top: 10px; left: 10px; padding: 5px 11px; border-radius: 999px; background: rgba(0,0,0,.6); font-size: 14px; }
+  .status.ok::before { content: "● "; color: #4cd06b; }
+  .status.bad::before { content: "● "; color: #ff5555; }
+  .panel { padding: 12px 16px 24px; max-width: 720px; margin: 0 auto; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  button { font-size: 15px; padding: 10px 12px; border-radius: 10px; border: 1px solid #444; background: #1c1c1c; color: #eee; }
+  button.active { background: #2f6fed; border-color: #2f6fed; }
+  .meter { position: relative; flex: 1; height: 16px; background: #222; border-radius: 8px; overflow: hidden; }
+  .meter .bar { height: 100%; width: 0; background: #4cd06b; transition: width .1s; }
+  .meter .bar.loud { background: #ff5555; }
+  .meter .th { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; }
+  input[type=range] { flex: 1; }
+  label { font-size: 14px; color: #bbb; }
+  ul { list-style: none; padding: 0; margin: 0; font-size: 14px; color: #ccc; max-height: 30vh; overflow: auto; }
+  li { padding: 4px 0; border-bottom: 1px solid #222; }
+  #tap { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: #000; z-index: 10; text-align: center; padding: 16px; }
+  #tap button { font-size: 20px; padding: 16px 28px; background: #2f6fed; border: 0; }
+  #tap p { color: #aaa; font-size: 14px; line-height: 1.6; margin: 0; }
+</style>
+</head>
+<body>
+<div id="tap">
+  <div style="font-size:56px">👶</div>
+  <button id="go">탭해서 보기</button>
+  <p>소리를 들으려면 한 번 탭해야 합니다.<br>보는 동안에는 화면이 꺼지지 않게 해 주세요.</p>
+</div>
+
+<div class="wrap">
+  <video id="video" autoplay playsinline></video>
+  <div id="status" class="status bad">연결 중…</div>
+</div>
+
+<div class="panel">
+  <div class="row">
+    <span>🔊</span>
+    <div class="meter"><div id="bar" class="bar"></div><div id="th" class="th"></div></div>
+  </div>
+  <div class="row">
+    <label for="sens">알림 민감도</label>
+    <input id="sens" type="range" min="5" max="95" value="55">
+  </div>
+  <div class="row">
+    <button id="muteBtn">🔈 소리 켜짐</button>
+    <button id="alertBtn" class="active">🔔 소리 알림</button>
+    <button id="nightBtn">🌙 야간 보정</button>
+    <button id="flipBtn">↻ 뒤집기</button>
+    <button id="fsBtn">⛶ 전체화면</button>
+  </div>
+  <label>최근 소리 감지</label>
+  <ul id="log"><li>아직 없음</li></ul>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const myId = Math.random().toString(36).slice(2, 10);
+let pc = null, nonce = 0, joinTimer = null, lostSince = 0;
+let audioCtx = null, analyser = null;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? {} : {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error(path + ' ' + r.status);
+  return r.json();
+}
+
+function setStatus(text, ok) {
+  $('status').textContent = text;
+  $('status').className = 'status ' + (ok ? 'ok' : 'bad');
+}
+
+// ---------- 연결 ----------
+async function join() {
+  nonce++;
+  if (pc) { pc.close(); pc = null; }
+  setStatus('카메라에 연결 중…');
+  clearTimeout(joinTimer);
+  joinTimer = setTimeout(join, 15000);   // 15초 안에 연결 안 되면 재시도
+  try { await api('/api/send', { to: 'cam', msg: { type: 'join', from: myId, nonce } }); }
+  catch { setStatus('서버에 연결할 수 없음'); }
+}
+
+function waitIce(p) {
+  return new Promise(res => {
+    if (p.iceGatheringState === 'complete') return res();
+    const t = setTimeout(res, 3000);
+    p.addEventListener('icegatheringstatechange', () => {
+      if (p.iceGatheringState === 'complete') { clearTimeout(t); res(); }
+    });
+  });
+}
+
+async function onOffer(m) {
+  if (m.nonce !== nonce) return;          // 예전 요청에 대한 응답은 무시
+  if (pc) pc.close();
+  const p = pc = new RTCPeerConnection();
+  p.addEventListener('track', (e) => {
+    if ($('video').srcObject !== e.streams[0]) {
+      $('video').srcObject = e.streams[0];
+      $('video').play().catch(() => {});
+    }
+    if (e.track.kind === 'audio') setupAnalyser(e.streams[0]);
+  });
+  p.addEventListener('connectionstatechange', () => {
+    if (p !== pc) return;
+    const s = p.connectionState;
+    if (s === 'connected') { clearTimeout(joinTimer); lostSince = 0; setStatus('연결됨', true); }
+    else if (s === 'disconnected') { setStatus('신호 약함…'); lostSince = lostSince || Date.now(); }
+    else if (s === 'failed' || s === 'closed') { lostSince = lostSince || Date.now(); setTimeout(join, 1000); }
+  });
+  await p.setRemoteDescription(m.sdp);
+  await p.setLocalDescription(await p.createAnswer());
+  await waitIce(p);
+  await api('/api/send', { to: 'cam', msg: { type: 'answer', from: myId, nonce, sdp: p.localDescription } });
+}
+
+async function pollLoop() {
+  while (true) {
+    try {
+      const msgs = await api('/api/poll?who=' + myId);
+      for (const m of msgs) {
+        try {
+          if (m.type === 'offer') await onOffer(m);
+          else if (m.type === 'cam-restart') join();
+        } catch (e) { console.warn(e); }
+      }
+    } catch {
+      setStatus('서버 연결 끊김 — 재시도 중');
+      lostSince = lostSince || Date.now();
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+}
+
+// ---------- 소리 감지 ----------
+const LOUD_MS = 1500;        // 이 시간 이상 크게 들리면 알림
+const COOLDOWN_MS = 15000;   // 알림 간 최소 간격
+let loudMs = 0, lastAlert = 0, lastTick = 0, lostAlerted = false;
+
+function setupAnalyser(stream) {
+  if (!audioCtx || !stream.getAudioTracks().length) return;
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  audioCtx.createMediaStreamSource(stream).connect(analyser);  // 소리는 video 요소가 재생, 여기선 분석만
+}
+
+function threshold() { return 100 - Number($('sens').value); }   // 0~100 레벨 기준
+
+function level() {
+  if (!analyser) return 0;
+  const buf = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buf);
+  let s = 0; for (const v of buf) s += v * v;
+  const db = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-8);   // 약 -80(조용) ~ 0(최대)
+  return Math.max(0, Math.min(100, (db + 70) * 1.6));
+}
+
+function addLog(text) {
+  const li = document.createElement('li');
+  li.textContent = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '  ' + text;
+  const log = $('log');
+  if (log.firstChild && log.firstChild.textContent === '아직 없음') log.innerHTML = '';
+  log.prepend(li);
+  while (log.children.length > 30) log.lastChild.remove();
+}
+
+function fireAlert(text) {
+  addLog(text);
+  if (!$('alertBtn').classList.contains('active')) return;
+  document.body.classList.add('alert');
+  setTimeout(() => document.body.classList.remove('alert'), 4000);
+  if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 400]);
+  beep();
+}
+
+function beep() {
+  if (!audioCtx) return;
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.frequency.value = 880; g.gain.value = 0.15;
+  o.connect(g).connect(audioCtx.destination);
+  o.start(); o.stop(audioCtx.currentTime + 0.3);
+}
+
+function tick() {
+  const now = performance.now();
+  const dt = lastTick ? now - lastTick : 0; lastTick = now;
+  const lv = level(), th = threshold();
+  $('bar').style.width = lv + '%';
+  $('bar').classList.toggle('loud', lv >= th);
+  $('th').style.left = th + '%';
+
+  if (pc && pc.connectionState === 'connected') {
+    loudMs = lv >= th ? loudMs + dt : Math.max(0, loudMs - dt * 0.5);
+    if (loudMs >= LOUD_MS && Date.now() - lastAlert > COOLDOWN_MS) {
+      lastAlert = Date.now(); loudMs = 0;
+      fireAlert('🔊 소리 감지');
+    }
+    lostAlerted = false;
+  } else if (lostSince && Date.now() - lostSince > 20000 && !lostAlerted) {
+    lostAlerted = true;
+    fireAlert('⚠️ 카메라 연결이 끊겼습니다');
+  }
+  requestAnimationFrame(tick);
+}
+
+// ---------- 버튼 ----------
+function toggle(btn, key, on, apply) {
+  btn.classList.toggle('active', on); apply(on); store.set(key, on ? '1' : '0');
+}
+$('muteBtn').onclick = () => {
+  const v = $('video'); v.muted = !v.muted;
+  $('muteBtn').textContent = v.muted ? '🔇 소리 꺼짐' : '🔈 소리 켜짐';
+};
+$('alertBtn').onclick = () => toggle($('alertBtn'), 'v.alert', !$('alertBtn').classList.contains('active'), () => {});
+$('nightBtn').onclick = () => toggle($('nightBtn'), 'v.night', !$('nightBtn').classList.contains('active'), on => $('video').classList.toggle('night', on));
+$('flipBtn').onclick = () => toggle($('flipBtn'), 'v.flip', !$('flipBtn').classList.contains('active'), on => $('video').classList.toggle('flip', on));
+$('fsBtn').onclick = () => {
+  const v = $('video');
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (v.requestFullscreen) v.requestFullscreen();
+  else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+};
+$('sens').value = store.get('v.sens') || 55;
+$('sens').oninput = () => store.set('v.sens', $('sens').value);
+if (store.get('v.alert') === '0') $('alertBtn').classList.remove('active');
+if (store.get('v.night') === '1') { $('nightBtn').classList.add('active'); $('video').classList.add('night'); }
+if (store.get('v.flip') === '1') { $('flipBtn').classList.add('active'); $('video').classList.add('flip'); }
+
+$('go').onclick = () => {
+  $('tap').remove();
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    pollLoop();
+  join();
+  requestAnimationFrame(tick);
+};
+window.addEventListener('pagehide', () => {
+  navigator.sendBeacon?.('/api/send', new Blob([JSON.stringify({ to: 'cam', msg: { type: 'leave', from: myId } })], { type: 'application/json' }));
+});
+</script>
+</body>
+</html>
