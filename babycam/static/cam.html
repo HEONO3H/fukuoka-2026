@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>베이비캠 · 카메라</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; font-family: system-ui, "Malgun Gothic", sans-serif; background: #111; color: #eee; }
+  main { max-width: 760px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  video { width: 100%; background: #000; border-radius: 10px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
+  select, button { font-size: 15px; padding: 8px 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: #eee; }
+  button.primary { background: #2f6fed; border-color: #2f6fed; }
+  .pill { display: inline-block; padding: 4px 10px; border-radius: 999px; background: #333; }
+  .on { background: #1f7a3a; }
+  .err { color: #ff8080; }
+  .meter { flex: 1; min-width: 120px; height: 10px; background: #333; border-radius: 5px; overflow: hidden; }
+  .meter div { height: 100%; width: 0; background: #4cd06b; transition: width .1s; }
+  p.note { color: #aaa; font-size: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<main>
+  <h1>👶 베이비캠 · 카메라 PC</h1>
+  <video id="preview" autoplay muted playsinline></video>
+  <div class="row">
+    <span id="state" class="pill">대기 중</span>
+    <span id="viewers" class="pill">시청 중: 0</span>
+    <span>🎤</span><div class="meter"><div id="mic"></div></div>
+  </div>
+  <div class="row">
+    <select id="videoSel" title="카메라"></select>
+    <select id="audioSel" title="마이크"></select>
+    <select id="quality" title="화질">
+      <option value="720">720p (권장)</option>
+      <option value="1080">1080p</option>
+      <option value="480">480p (가벼움)</option>
+    </select>
+    <button id="startBtn" class="primary">시작</button>
+  </div>
+  <p id="error" class="err"></p>
+  <p class="note">
+    이 탭은 켜 둔 채로 두세요 (다른 창 뒤로 내려도 괜찮습니다).<br>
+    폰에서는 서버 창에 표시된 주소(http://PC-IP:8000)로 접속하세요.<br>
+    모니터는 꺼져도 되지만 PC가 절전 모드로 들어가면 안 됩니다.
+  </p>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const pcs = new Map();       // viewerId -> RTCPeerConnection
+let stream = null;
+let polling = false;
+let meterCtx = null;
+
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? {} : {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error(path + ' ' + r.status);
+  return r.json();
+}
+const sendTo = (to, msg) => api('/api/send', { to, msg });
+
+function setState(text, on) { $('state').textContent = text; $('state').classList.toggle('on', !!on); }
+function updateViewers() {
+  const n = [...pcs.values()].filter(pc => pc.connectionState === 'connected').length;
+  $('viewers').textContent = '시청 중: ' + n;
+}
+
+async function fillDevices() {
+  const devs = await navigator.mediaDevices.enumerateDevices();
+  for (const [sel, kind, key] of [[$('videoSel'), 'videoinput', 'cam.video'], [$('audioSel'), 'audioinput', 'cam.audio']]) {
+    const saved = store.get(key);
+    sel.innerHTML = '';
+    devs.filter(d => d.kind === kind).forEach((d, i) => {
+      const o = new Option(d.label || `${kind === 'videoinput' ? '카메라' : '마이크'} ${i + 1}`, d.deviceId);
+      if (d.deviceId === saved) o.selected = true;
+      sel.add(o);
+    });
+  }
+}
+
+function startMeter() {
+  if (meterCtx) meterCtx.close();
+  meterCtx = new AudioContext();
+  const an = meterCtx.createAnalyser();
+  an.fftSize = 1024;
+  meterCtx.createMediaStreamSource(stream).connect(an);
+  meterCtx.resume().catch(() => {});
+  document.addEventListener('click', () => meterCtx && meterCtx.resume(), { once: true });
+  const buf = new Float32Array(an.fftSize);
+  const tick = () => {
+    if (!meterCtx || meterCtx.state === 'closed') return;
+    an.getFloatTimeDomainData(buf);
+    let s = 0; for (const v of buf) s += v * v;
+    const db = 20 * Math.log10(Math.sqrt(s / buf.length) + 1e-8);
+    $('mic').style.width = Math.max(0, Math.min(100, (db + 70) * 1.6)) + '%';
+    setTimeout(tick, 150);
+  };
+  tick();
+}
+
+async function start() {
+  $('error').textContent = '';
+  const h = Number($('quality').value);
+  const vid = $('videoSel').value, aud = $('audioSel').value;
+  try {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: vid ? { exact: vid } : undefined, height: { ideal: h }, width: { ideal: Math.round(h * 16 / 9) }, frameRate: { ideal: 15, max: 30 } },
+      // 아기 소리를 그대로 듣기 위해 잡음 제거/자동 볼륨은 끔
+      audio: { deviceId: aud ? { exact: aud } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+    });
+  } catch (e) {
+    $('error').textContent = '카메라/마이크를 열 수 없습니다: ' + e.message + ' (다른 프로그램이 사용 중인지 확인하세요)';
+    setState('오류');
+    return;
+  }
+  $('preview').srcObject = stream;
+  await fillDevices();
+  store.set('cam.video', $('videoSel').value);
+  store.set('cam.audio', $('audioSel').value);
+  store.set('cam.quality', $('quality').value);
+  store.set('cam.autostart', '1');
+  startMeter();
+  stream.getVideoTracks()[0].addEventListener('ended', () => { setState('카메라 연결 끊김'); setTimeout(start, 3000); });
+
+  // 기존 연결을 모두 닫고 시청자들에게 다시 접속하라고 알림
+  pcs.forEach(pc => pc.close()); pcs.clear(); updateViewers();
+  await api('/api/cam-hello', {});
+  setState('방송 중', true);
+  $('startBtn').textContent = '다시 시작';
+  if (!polling) pollLoop();
+}
+
+function waitIce(pc) {
+  return new Promise(res => {
+    if (pc.iceGatheringState === 'complete') return res();
+    const t = setTimeout(res, 3000);
+    pc.addEventListener('icegatheringstatechange', () => {
+      if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); }
+    });
+  });
+}
+
+function closePeer(id) {
+  const pc = pcs.get(id);
+  if (pc) { pc.close(); pcs.delete(id); }
+  updateViewers();
+}
+
+async function offerTo(id, nonce) {
+  closePeer(id);
+  if (!stream) return;
+  const pc = new RTCPeerConnection();   // 같은 와이파이 안이므로 STUN/TURN 불필요
+  pcs.set(id, pc);
+  stream.getTracks().forEach(t => pc.addTrack(t, stream));
+  pc.addEventListener('connectionstatechange', () => {
+    if (['failed', 'closed'].includes(pc.connectionState) && pcs.get(id) === pc) closePeer(id);
+    updateViewers();
+  });
+  await pc.setLocalDescription(await pc.createOffer());
+  await waitIce(pc);
+  await sendTo(id, { type: 'offer', nonce, sdp: pc.localDescription });
+  setTimeout(() => { if (pcs.get(id) === pc && pc.connectionState !== 'connected') closePeer(id); }, 30000);
+}
+
+async function handle(m) {
+  if (!m || !m.from) return;
+  if (m.type === 'join') await offerTo(m.from, m.nonce);
+  else if (m.type === 'answer') {
+    const pc = pcs.get(m.from);
+    if (pc && pc.signalingState === 'have-local-offer') await pc.setRemoteDescription(m.sdp);
+  } else if (m.type === 'leave') closePeer(m.from);
+}
+
+async function pollLoop() {
+  polling = true;
+  while (true) {
+    try {
+      const msgs = await api('/api/poll?who=cam');
+      for (const m of msgs) { try { await handle(m); } catch (e) { console.warn(e); } }
+    } catch (e) {
+      setState('서버 연결 끊김 (서버 창이 켜져 있나요?)');
+      await new Promise(r => setTimeout(r, 3000));
+      try { await api('/api/cam-hello', {}); if (stream) setState('방송 중', true); } catch {}
+    }
+  }
+}
+
+$('startBtn').onclick = start;
+$('quality').value = store.get('cam.quality') || '720';
+navigator.mediaDevices.addEventListener('devicechange', fillDevices);
+fillDevices().then(() => { if (store.get('cam.autostart')) start(); });
+</script>
+</body>
+</html>
